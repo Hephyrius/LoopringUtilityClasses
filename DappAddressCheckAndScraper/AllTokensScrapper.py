@@ -56,17 +56,17 @@ for i in range(len(s)):
 FinalList = []
 for i in etherlist:
     print(i)
-    try:
-        
-        j = []
-        website = "http://etherscan.io/token/" +i[2]
-        
-        browser.get(website)
-        time.sleep(1)
-        
-        html_source = browser.page_source
-        tree = html.fromstring(html_source)
-        bits = tree.xpath('//*[@id="ContentPlaceHolder1_trContract"]/td[2]/a')
+    
+    j = []
+    website = "http://etherscan.io/token/" +i[2]
+    
+    browser.get(website)
+    time.sleep(1)
+    
+    html_source = browser.page_source
+    tree = html.fromstring(html_source)
+    bits = tree.xpath('//*[@id="ContentPlaceHolder1_trContract"]/td[2]/a')
+    if(len(bits)>0):
         adr = bits[0].text
         
         website = "http://etherscan.io/"
@@ -75,10 +75,10 @@ for i in etherlist:
         
         bits = tree.xpath('//td/text()')
         decimal = ""
-        for i in range(len(bits)):
-            bits[i] = bits[i].lower()
-            if ('decimal' in bits[i]):
-                decimal = decimal + bits[i+1]
+        for k in range(len(bits)):
+            bits[k] = bits[k].lower()
+            if ('decimal' in bits[k]):
+                decimal = decimal + bits[k+1]
                 decimal = decimal.replace(" ", "")
                 decimal = decimal.lower()
         
@@ -89,8 +89,5 @@ for i in etherlist:
         row = pd.Series([j[0], j[1], j[2], j[3]], index=['Address', 'Bits', 'Symbol','Name'])
         data = data.append(row, ignore_index=True)
 
-    except:
-        pass
-    
             
 data.to_csv("MegaListofTokens.csv")
