@@ -43,7 +43,9 @@ while page<100000:
     for i in s:
         i=i.replace(" ","")
         if len(i) ==42 and "0x" in i:
-            addresses.append(i)
+            if (i in addresses) == False:
+                addresses.append(i)
+    
     
     for adr in addresses:
         
@@ -98,6 +100,7 @@ while page<100000:
             lrc = str(lrc)
             lrc = lrc.replace(" ","")
             lrc = lrc.replace("\\","")
+            lrc = lrc.replace("\n","")
             lrc = lrc.replace("n","")
             lrc = lrc.replace("[","")
             lrc = lrc.replace("]","")
@@ -107,12 +110,15 @@ while page<100000:
             lrc = int(lrc)
             
             if (lrc >0) == False:
-                if adr not in data.Address:
-                    row = pd.Series([adr, balance, lrc], index=['Address', 'EthBal', 'LrcBal'])
-                    data = data.append(row, ignore_index=True)
-                    total = total+1
-                    print("Addresses Found" + str(total))
-
+                
+                row = pd.Series([adr, balance, lrc], index=['Address', 'EthBal', 'LrcBal'])
+                data = data.append(row, ignore_index=True)
+                total = total+1
+                print("Addresses Found" + str(total))
+    
+    data = data.drop_duplicates(subset = 'Address', keep='first')
+    total = len(data.columns)
+    data.to_csv("addressdata.csv")
     page = page+5
 
 
