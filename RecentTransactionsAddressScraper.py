@@ -5,10 +5,11 @@ import pandas as pd
 import time
 from bs4 import BeautifulSoup
 
-
-columns = {'Address', 'EthBal', 'LrcBal'}
-data = pd.DataFrame(columns=columns)
-
+try:
+    data = pd.read_csv("addressdata.csv")
+except:
+    columns = {'Address', 'EthBal', 'LrcBal'}
+    data = pd.DataFrame(columns=columns)
 website = "http://etherscan.io/address/"
 browser = webdriver.PhantomJS(executable_path='c:/phantomjs/bin/phantomjs.exe')
 
@@ -107,6 +108,7 @@ while page<100000:
             lrc = lrc.replace("'","")
             lrc = lrc.replace("LRC", "")
             lrc = lrc.replace(",", "")
+            lrc = lrc.replace(".", "")
             lrc = int(lrc)
             
             if (lrc >0) == False:
@@ -118,7 +120,7 @@ while page<100000:
     
     data = data.drop_duplicates(subset = 'Address', keep='first')
     total = len(data.columns)
-    data.to_csv("addressdata.csv")
+    data.to_csv("addressdata.csv", index=False)
     page = page+5
 
 
