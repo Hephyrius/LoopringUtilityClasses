@@ -56,23 +56,38 @@ for i in range(len(s)):
 FinalList = []
 for i in etherlist:
     print(i)
-    
+    adr = ""
     j = []
     website = "http://etherscan.io/token/" +i[2]
     
     browser.get(website)
-    time.sleep(1)
     
     html_source = browser.page_source
     tree = html.fromstring(html_source)
     bits = tree.xpath('//*[@id="ContentPlaceHolder1_trContract"]/td[2]/a')
     if(len(bits)>0):
         adr = bits[0].text
-        
+
+    else:
+        website = "https://coinmarketcap.com/currencies/" + i[3]
+        browser.get(website)
+        html_source = browser.page_source
+        tree = html.fromstring(html_source)
+        s = "" + html_source
+        x = s.find('https://etherscan.io/token/')
+        if(x > 0):
+            s1 = s[x:(x+75)]
+            s2 = s1.split('/')
+            s3 = s2[4]
+            s4 = s3.split('"')
+            adr = s4[0]
+        else:
+            adr = ""
+            
+    if adr != "":
         website = "http://etherscan.io/"
         webAddress = website+"readcontract?a="+adr
         browser.get(webAddress)
-        
         bits = tree.xpath('//td/text()')
         decimal = ""
         for k in range(len(bits)):
@@ -81,13 +96,15 @@ for i in etherlist:
                 decimal = decimal + bits[k+1]
                 decimal = decimal.replace(" ", "")
                 decimal = decimal.lower()
-        
-        j.append(adr)
-        j.append(int(decimal))
-        j.append(i[2])
-        j.append(i[3])
-        row = pd.Series([j[0], j[1], j[2], j[3]], index=['Address', 'Bits', 'Symbol','Name'])
-        data = data.append(row, ignore_index=True)
+        try:
+            j.append(adr)
+            j.append(decimal)
+            j.append(i[2])
+            j.append(i[3])
+            row = pd.Series([j[0], j[1], j[2], j[3]], index=['Address', 'Bits', 'Symbol','Name'])
+            data = data.append(row, ignore_index=True)
+        except:
+            print("Data Storage error")
 
             
 data.to_csv("MegaListofTokens.csv")
