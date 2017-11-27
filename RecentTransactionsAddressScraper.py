@@ -5,13 +5,8 @@ import pandas as pd
 import time
 from bs4 import BeautifulSoup
 
-try:
-    data = pd.read_csv("addressdata.csv")
-    total = len(data.rows)
-except:
-    columns = {'Address', 'EthBal', 'LrcBal'}
-    data = pd.DataFrame(columns=columns)
-    total = 0
+data = pd.read_csv("addressdata.csv")
+total = len(data)
 
 website = "http://etherscan.io/address/"
 browser = webdriver.PhantomJS(executable_path='c:/phantomjs/bin/phantomjs.exe')
@@ -121,7 +116,7 @@ while page<100000:
                 print("Addresses Found" + str(total))
     
     data = data.drop_duplicates(subset = 'Address', keep='first')
-    total = len(data.rows)
+    total = len(data)
     data.to_csv("addressdata.csv", index=False)
     page = page+5
 
